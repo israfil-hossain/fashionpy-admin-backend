@@ -78,6 +78,10 @@ export async function createStore(
           {
             currency_code: 'eur',
             is_default: true
+          },
+          {
+            currency_code: 'bdt',
+            is_default: false
           }
         ],
         default_sales_channel_id: salesChannelId,
@@ -88,7 +92,7 @@ export async function createStore(
 }
 export async function createRegions(container: MedusaContainer) {
   const {
-    result: [region]
+    result: [region, bdRegion]
   } = await createRegionsWorkflow(container).run({
     input: {
       regions: [
@@ -97,13 +101,19 @@ export async function createRegions(container: MedusaContainer) {
           currency_code: 'eur',
           countries,
           payment_providers: ['pp_system_default']
+        },
+        {
+          name: 'Bangladesh',
+          currency_code: 'bdt',
+          countries: ['bd'],
+          payment_providers: ['pp_system_default']
         }
       ]
     }
   })
 
   await createTaxRegionsWorkflow(container).run({
-    input: countries.map((country_code) => ({
+    input: [...countries, 'bd'].map((country_code) => ({
       country_code
     }))
   })
